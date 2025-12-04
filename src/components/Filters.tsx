@@ -82,9 +82,9 @@ export const Filters: React.FC = () => {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="w-full lg:w-72 shrink-0"
+      className="w-full"
     >
-      <div className="glass rounded-2xl p-5 sticky top-4">
+      <div className="glass rounded-2xl p-5">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center">
