@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, Database, Columns } from 'lucide-react';
+import { BarChart3, Database, Columns, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useData } from '@/contexts/DataContext';
 import { AutoChart } from './AutoChart';
 import { Filters } from './Filters';
@@ -14,6 +15,28 @@ export const Dashboard: React.FC = () => {
     if (!parsedData) return [];
     return filterData(parsedData.data, filters, parsedData.schema);
   }, [parsedData, filters]);
+
+  const downloadCSV = () => {
+    if (!parsedData || filteredData.length === 0) return;
+    
+    const headers = parsedData.columns.join(',');
+    const rows = filteredData.map(row => 
+      parsedData.columns.map(col => {
+        const value = row[col];
+        const stringValue = value === null || value === undefined ? '' : String(value);
+        return stringValue.includes(',') ? `"${stringValue}"` : stringValue;
+      }).join(',')
+    );
+    
+    const csv = [headers, ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `dashboard-data-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const chartConfigs = useMemo((): ChartConfig[] => {
     if (!parsedData) return [];
@@ -71,6 +94,14 @@ export const Dashboard: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-6 pr-2">
+          {/* Header with Download */}
+          <div className="flex justify-end">
+            <Button onClick={downloadCSV} variant="outline" className="gap-2">
+              <Download className="w-4 h-4" />
+              Download CSV
+            </Button>
+          </div>
+
           {/* Stats Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <motion.div
